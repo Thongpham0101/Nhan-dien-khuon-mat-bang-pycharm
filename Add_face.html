@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>VFD.VinhUni - Thêm mới khuôn mặt</title>
+ <link rel="icon" href="{{ url_for('static',
+filename='favicon_vinhuni.png') }}" type="image/x-icon">
+ <link
+href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.cs
+s" rel="stylesheet">
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-
+beta3/css/all.min.css" rel="stylesheet">
+ <link href="{{ url_for('static', filename='styles.css') }}"
+rel="stylesheet">
+</head>
+<body>
+ <div class="header">
+ <div class="d-flex align-items-center justify-content-between w-100">
+ <div class="d-flex align-items-center">
+ <img src="{{ url_for('static', filename='logo_vinhuni.png')
+}}" alt="VinhUni Logo" class="logo">
+ <div class="ml-2">
+ <div class="title">TRƯỜNG ĐẠI HỌC VINH</div>
+ <div class="subtitle">Hệ thống nhận diện khuôn mặt trực
+tuyến</div>
+ </div>
+ </div>
+ <button class="navbar-toggler" type="button" datatoggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" ariaexpanded="false" aria-label="Toggle navigation">
+ <i class="fa-solid fa-bars" style="color: white;"></i>
+ </button>
+ </div>
+ <div class="collapse navbar-collapse" id="navbarNav">
+ <ul class="navbar-nav">
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('index') }}">
+ <i class="fa-solid fa-house"></i>
+ Trang chủ
+ </a>
+ </li>
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('add_face') }}">
+ <i class="fa-solid fa-user-plus"></i>
+ Thêm mới khuôn mặt vào CSDL
+ </a>
+ </li>
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('guide') }}">
+ <i class="fas fa-history"></i>
+ Lịch sử quét
+ </a>
+ </li>
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('info') }}">
+ <i class="fa-solid fa-info-circle"></i>
+ HDSD & Thông tin phần mềm
+ </a>
+ </li>
+ </ul>
+ </div>
+ </div>
+ <div class="footer">
+ ©Nhóm 7
+ </div>
+ <div class="container mt-5">
+ <div class="text-center mb-4">
+ <h1 class="text-center">Thêm mới khuôn mặt vào CSDL</h1>
+ <h2 class="text-center small-text"></h2>
+ </div>
+ <div class="card mt-4" id="password-card">
+ <div class="card-body">
+ <h5 class="card-title">Nhập mật khẩu quản trị viên để thao
+tác:</h5>
+ <form id="password-form">
+ <input type="password" id="admin-password" class="formcontrol mt-3" placeholder="Mật khẩu quản trị viên">
+ <button type="submit" class="btn btn-primary mt-3">Xác
+nhận</button>
+ </form>
+ </div>
+ </div>
+ <div id="add-face-form" class="card mt-4" style="display:none;">
+ <div class="card-body">
+ <h5 class="card-title">THÊM MỚI ID SINH TRẮC</h5>
+ <form id="face-form">
+ <div class="form-group">
+ <label for="name">Họ tên sinh viên:</label>
+ <input type="text" id="name" class="form-control"
+placeholder="Nhập tên">
+ </div>
+ <div class="form-group">
+ <label for="mssv">Mã số sinh viên:</label>
+ <input type="text" id="mssv" class="form-control"
+placeholder="Nhập MSSV">
+ </div>
+ <div class="form-group">
+ <label for="webcam">ID sinh trắc:</label>
+ <video id="webcam" autoplay playsinline width="540"
+height="320"></video>
+ <button type="button" id="capture-btn" class="btn
+btn-danger mt-3">Thêm</button>
+ </div>
+ </form>
+ </div>
+ </div>
+ <div id="notification" class="alert alert-success mt-4"
+style="display:none;">
+ <p id="notification-message"></p>
+ <button id="continue-btn" class="btn btn-success mt-3">Thêm mới
+ID khác</button>
+ <button id="cancel-btn" class="btn btn-secondary mt-3">Hủy
+bỏ</button>
+ </div>
+ <div id="error" class="alert alert-danger mt-4"
+style="display:none;">
+ <p id="error-message"></p>
+ </div>
+ </div>
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script
+src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js
+"></script>
+ <script
+src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js">
+</script>
+ <script>
+ document.addEventListener('DOMContentLoaded', (event) => {
+ var webcamStream = null;
+ document.getElementById('password-form').addEventListener('submit',
+function(event) {
+ event.preventDefault();
+ var password = document.getElementById('admin-password').value;
+ if (password === 'N7@tnl') {
+ document.getElementById('add-face-form').style.display =
+'block';
+ document.getElementById('password-card').style.display =
+'none';
+ startWebcam();
+ } else {
+ showError("Mật khẩu quản trị viên không đúng!");
+ setTimeout(() => {
+ document.getElementById('error').style.display = 'none';
+ }, 5000); // Tự động ẩn sau 5 giây
+ }
+ });
+ document.getElementById('capture-btn').addEventListener('click', ()
+=> {
+ const name = document.getElementById('name').value;
+ const mssv = document.getElementById('mssv').value;
+ if (!name || !mssv) {
+ showError("Tên và MSSV không được để trống. Vui lòng nhập đầy
+đủ thông tin!");
+ setTimeout(() => {
+ document.getElementById('error').style.display = 'none';
+ }, 5000); // Tự động ẩn sau 5 giây
+ return;
+ }
+ const webcam = document.getElementById('webcam');
+ const canvas = document.createElement('canvas');
+ canvas.width = 640;
+ canvas.height = 480;
+ const context = canvas.getContext('2d');
+ context.drawImage(webcam, 0, 0, canvas.width, canvas.height);
+ const dataUrl = canvas.toDataURL('image/png');
+ fetch('/add_new_face', {
+ method: 'POST',
+ body: JSON.stringify({ image: dataUrl, name: name, mssv:
+mssv, password: document.getElementById('admin-password').value }),
+ headers: { 'Content-Type': 'application/json' }
+ })
+ .then(response => {
+ if (!response.ok) {
+ return response.json().then(data => { throw new
+Error(data.message); });
+ }
+ return response.json();
+ })
+ .then(data => {
+ console.log("Server Response: ", data); // Log phản hồi từ
+máy chủ
+ if (data.message.includes("Khuôn mặt của bạn đã được thêm vào
+CSDL!")) {
+ stopWebcam();
+ document.getElementById('add-face-form').style.display =
+'none';
+ showNotification(data.message);
+ } else {
+ showError(data.message);
+ }
+ })
+ .catch(error => {
+ showError(`CẢNH BÁO: ${error.message}`);
+ setTimeout(() => {
+ document.getElementById('error').style.display = 'none';
+ }, 3000); // Tự động ẩn sau 3 giây
+ console.error("Error:", error);
+ });
+ });
+ document.getElementById('continue-btn').addEventListener('click', ()
+=> {
+ document.getElementById('notification').style.display = 'none';
+ document.getElementById('add-face-form').style.display = 'block';
+ document.getElementById('face-form').reset();
+ startWebcam();
+ });
+ document.getElementById('cancel-btn').addEventListener('click', () =>
+{
+ document.getElementById('notification').style.display = 'none';
+ document.getElementById('password-card').style.display = 'block';
+ document.getElementById('add-face-form').style.display = 'none';
+ document.getElementById('face-form').reset();
+ stopWebcam(); // Thêm hàm này để dừng webcam
+ });
+ function startWebcam() {
+ navigator.mediaDevices.getUserMedia({ video: true })
+ .then(stream => {
+ const webcam = document.getElementById('webcam');
+ webcam.srcObject = stream;
+ webcamStream = stream;
+ webcam.onloadedmetadata = () => {
+ webcam.play();
+ };
+ })
+ .catch(err => {
+ showError("Không thể truy cập webcam. Vui lòng thử lại!");
+ setTimeout(() => {
+ document.getElementById('error').style.display = 'none';
+ }, 5000); // Tự động ẩn sau 5 giây
+ console.error("Error accessing webcam:", err);
+ });
+ }
+ function stopWebcam() {
+ if (webcamStream) {
+ const tracks = webcamStream.getTracks();
+ tracks.forEach(track => track.stop());
+ webcamStream = null;
+ }
+ document.getElementById('webcam').srcObject = null;
+ }
+ function showNotification(message) {
+ const notification = document.getElementById('notification');
+ const notificationMessage =
+document.getElementById('notification-message');
+ notification.style.display = 'block';
+ notificationMessage.innerHTML = message;
+ }
+ function showError(message) {
+ const error = document.getElementById('error');
+ const errorMessage = document.getElementById('error-message');
+ error.style.display = 'block';
+ errorMessage.innerHTML = message;
+ setTimeout(() => {
+ error.style.display = 'none';
+ }, 5000); // Tự động ẩn sau 5 giây
+ }
+ });
+ </script>
+</body>
+</html>
