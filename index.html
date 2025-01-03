@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>VFD.VinhUni</title>
+ <link rel="icon" href="{{ url_for('static',
+filename='favicon_vinhuni.png') }}" type="image/x-icon">
+ <link
+href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.cs
+s" rel="stylesheet">
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-
+beta3/css/all.min.css" rel="stylesheet">
+ <link href="{{ url_for('static', filename='styles.css') }}"
+rel="stylesheet"> <!-- Liên kết tới tệp CSS -->
+</head>
+<body>
+ <div class="header">
+ <div class="d-flex align-items-center justify-content-between w-100">
+ <div class="d-flex align-items-center">
+ <img src="{{ url_for('static', filename='logo_vinhuni.png')
+}}" alt="VinhUni Logo" class="logo">
+ <div class="ml-2">
+ <div class="title">TRƯỜNG ĐẠI HỌC VINH</div>
+ <div class="subtitle">Hệ thống nhận diện khuôn mặt & thi
+trực tuyến</div>
+ </div>
+ </div>
+ <button class="navbar-toggler" type="button" datatoggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" ariaexpanded="false" aria-label="Toggle navigation">
+ <i class="fa-solid fa-bars" style="color: white;"></i> <!--
+Biểu tượng Font Awesome màu trắng -->
+ </button>
+ </div>
+ <div class="collapse navbar-collapse" id="navbarNav">
+ <ul class="navbar-nav">
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('index') }}">
+ <i class="fa-solid fa-house"></i>
+ Trang chủ
+ </a>
+ </li>
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('add_face') }}">
+ <i class="fa-solid fa-user-plus"></i>
+ Thêm mới khuôn mặt vào CSDL
+ </a>
+ </li>
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('guide') }}">
+ <i class="fas fa-history"></i>
+ Lịch sử quét
+ </a>
+ </li>
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('info') }}">
+ <i class="fa-solid fa-info-circle"></i>
+ HDSD & Thông tin phần mềm
+ </a>
+ </li>
+ </ul>
+ </div>
+ </div>
+ <div class="container mt-5">
+ <div class="text-center mb-4">
+ <h1 class="text-center">Đăng nhập</h1>
+ <h2 class="text-center small-text"></h2>
+ </div>
+ <div class="card mt-4">
+ <div class="card-body">
+ <h5 class="card-title">Lựa chọn hình thức đăng nhập: (F5 hoặc
+Refresh trình duyệt để tải lại trang khi bị lag)</h5>
+ <form id="mode-form">
+ <div class="form-check" style="margin-bottom: 10px;">
+ <input class="form-check-input" type="radio"
+name="mode" id="recognizeRadio" value="recognize" checked>
+ <label class="form-check-label" for="recognizeRadio">
+ <img src="{{ url_for('static',
+filename='icon2.png') }}" style="width: 40px; height: 40px; margin-right:
+10px;">
+ Nhận diện khuôn mặt với sinh trắc học từ CSDL
+ </label>
+ </div>
+ <div class="form-check" style="margin-bottom: 10px;">
+ <input class="form-check-input" type="radio"
+name="mode" id="recognizeWithCardRadio" value="recognizeWithCard">
+ <label class="form-check-label"
+for="recognizeWithCardRadio">
+ <img src="{{ url_for('static',
+filename='icon1.png') }}" style="width: 40px; height: 40px; margin-right:
+10px;">
+ Nhận diện khuôn mặt với thông tin thẻ sinh viên
+từ CSDL
+ </label>
+ </div>
+ <div id="password-container" style="display: none;">
+ <input type="password" id="admin-password"
+class="form-control mt-3" placeholder="Mật khẩu quản trị viên">
+ </div>
+ <button type="submit" class="btn btn-primary mt-3">Xác
+nhận</button>
+ </form>
+ </div>
+ </div>
+ <div id="webcam-container" class="text-center mt-4"
+style="display:none;">
+ <label for="webcam" class="label-instruction">Đưa gương mặt của
+bạn vào giữa khung hình:</label>
+ <video id="webcam" autoplay playsinline width="540"
+height="320"></video>
+ <button id="capture-btn" class="btn btn-danger mt-3">Xác
+nhận</button>
+ </div>
+ <div id="verification" class="alert alert-warning mt-4"
+style="display:none;">
+ <p id="verification-message"></p>
+ <img id="student-card-image" src="" alt="Ảnh thẻ sinh viên"
+class="img-thumbnail">
+ <button id="confirm-yes" class="btn btn-success">Có</button>
+ <button id="confirm-no" class="btn btn-danger">Không</button>
+ </div>
+ <div id="error" class="alert alert-danger mt-4"
+style="display:none;">
+ <p id="error-message"></p>
+ </div>
+ <!-- Thông báo cho nhận diện khuôn mặt -->
+ <div id="notification1" class="alert alert-success mt-4"
+style="display:none;">
+ <p id="notification-message1"></p>
+ <button id="manual-button1" class="btn btn-success">Vào
+ngay</button>
+ <p id="countdown-message1"></p>
+ </div>
+ <!-- Thông báo cho nhận diện với ảnh thẻ -->
+ <div id="notification2" class="alert alert-success mt-4"
+style="display:none;">
+ <p id="notification-message2"></p>
+ <button id="manual-button2" class="btn btn-success">Vào
+ngay</button>
+ <p id="countdown-message2"></p>
+ </div>
+ <div id="result" class="mt-4 result-text">Đã nhận diện: , MSSV:
+</div>
+ </div>
+ <div class="footer">
+ ©Nhóm 7
+ </div>
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script
+src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js
+"></script>
+ <script
+src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js">
+</script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-
+beta3/js/all.min.js"></script>
+</body>
+</html>
+<script>
+ document.addEventListener('DOMContentLoaded', (event) => {
+ let mode =
+document.querySelector('input[name="mode"]:checked').value; // Khởi tạo giá
+trị mode ban đầu
+ function setCaptureBtnOnClick() {
+ document.getElementById('capture-btn').onclick = mode ===
+'recognize' ? handleFaceRecognition : handleFaceRecognitionWithCard;
+ console.log("capture-btn onclick set for mode:", mode); //
+Ghi nhật ký sự kiện onclick của nút capture-btn
+ }
+ document.getElementById('mode-form').addEventListener('change',
+function() {
+ console.log("Mode changed"); // Ghi nhật ký thay đổi chế độ
+ stopCurrentFunctionality();
+ mode =
+document.querySelector('input[name="mode"]:checked').value;
+ console.log("Selected mode:", mode); // Ghi nhật ký chế độ đã
+chọn
+ setCaptureBtnOnClick();
+ });
+ document.getElementById('mode-form').addEventListener('submit',
+function(event) {
+ event.preventDefault();
+ console.log("Form submitted"); // Ghi nhật ký gửi form
+ if (mode === "recognize") {
+ console.log("Starting face recognition"); // Ghi nhật ký
+bắt đầu nhận diện khuôn mặt
+ startRecognition();
+ } else if (mode === "recognizeWithCard") {
+ console.log("Starting face recognition with card"); //
+Ghi nhật ký bắt đầu nhận diện khuôn mặt với thẻ
+ startRecognitionWithCard();
+ }
+ });
+ function stopCurrentFunctionality() {
+ console.log("Stopping current functionality"); // Ghi nhật ký
+dừng chức năng hiện tại
+ const webcamContainer = document.getElementById('webcamcontainer');
+ const verificationContainer =
+document.getElementById('verification');
+ const notificationContainer1 =
+document.getElementById('notification1');
+ const notificationContainer2 =
+document.getElementById('notification2');
+ const resultContainer = document.getElementById('result');
+ const passwordContainer = document.getElementById('passwordcontainer');
+ console.log("passwordContainer exists:",
+!!passwordContainer); // Ghi nhật ký kiểm tra phần tử password-container
+ stopWebcam();
+ if (webcamContainer) webcamContainer.style.display = 'none';
+ if (verificationContainer)
+verificationContainer.style.display = 'none';
+ if (notificationContainer1)
+notificationContainer1.style.display = 'none';
+ if (notificationContainer2)
+notificationContainer2.style.display = 'none';
+ if (resultContainer) resultContainer.innerHTML = ''; // Đảm
+bảo phần tử tồn tại
+ if (passwordContainer) passwordContainer.style.display =
+'none';
+ setCaptureBtnOnClick(); // Thiết lập lại sự kiện onclick cho
+nút capture-btn
+ console.log("capture-btn onclick reset in
+stopCurrentFunctionality"); // Ghi nhật ký sau khi thiết lập lại sự kiện
+onclick
+ }
+ function startRecognition() {
+ console.log("Before stopping current functionality in
+startRecognition"); // Ghi nhật ký trước khi dừng chức năng hiện tại
+ stopCurrentFunctionality();
+ navigator.mediaDevices.getUserMedia({ video: true })
+ .then(stream => {
+ const webcam = document.getElementById('webcam');
+ webcam.srcObject = stream;
+ webcam.onloadedmetadata = () => {
+ webcam.play();
+ };
+ })
+ .catch(err => {
+ showError("Không thể truy cập webcam. Vui lòng thử
+lại!");
+ });
+ document.getElementById('webcam-container').style.display =
+'block';
+ }
+ function handleFaceRecognition() {
+ console.log("Handling face recognition"); // Ghi nhật ký sự
+kiện onclick của nút capture-btn trong chế độ nhận diện khuôn mặt
+ const canvas = document.createElement('canvas');
+ canvas.width = 640;
+ canvas.height = 480;
+ const context = canvas.getContext('2d');
+ const video = document.getElementById('webcam');
+ context.drawImage(video, 0, 0, canvas.width, canvas.height);
+ const dataUrl = canvas.toDataURL('image/png');
+ fetch('/recognize_faces', {
+ method: 'POST',
+ body: JSON.stringify({ image: dataUrl }),
+ headers: { 'Content-Type': 'application/json' }
+ })
+ .then(response => {
+ if (!response.ok) {
+ return response.json().then(data => { throw new
+Error(data.message); });
+ }
+ return response.json();
+ })
+ .then(data => {
+ // Đặt nội dung thông báo vào phần tử notificationmessage1
+ document.getElementById('result').innerHTML =
+data.message;
+ document.getElementById('notificationmessage1').innerHTML = data.message + "<br>Xin chào! Bạn sắp được chuyển đến
+bài thi của mình.";
+ stopWebcam();
+ document.getElementById('webcam-container').style.display
+= 'none';
+ if (data.status === "success" && data.redirect_url) {
+ showNotification1(data.redirect_url); // Sử dụng
+notification1
+ } else {
+ showError(data.message);
+ }
+ })
+ .catch(error => {
+ showError(`Đã xảy ra lỗi: ${error.message}`);
+ console.error("Error:", error);
+ });
+ }
+ function startRecognitionWithCard() {
+ console.log("Before stopping current functionality in
+startRecognitionWithCard"); // Ghi nhật ký trước khi dừng chức năng hiện tại
+ stopCurrentFunctionality();
+ navigator.mediaDevices.getUserMedia({ video: true })
+ .then(stream => {
+ const webcam = document.getElementById('webcam');
+ webcam.srcObject = stream;
+ webcam.onloadedmetadata = () => {
+ webcam.play();
+ };
+ })
+ .catch(err => {
+ showError("Không thể truy cập webcam. Vui lòng thử
+lại!");
+ });
+ document.getElementById('webcam-container').style.display =
+'block';
+ }
+ function handleFaceRecognitionWithCard() {
+ console.log("Handling face recognition with card"); // Ghi
+nhật ký sự kiện onclick của nút capture-btn trong chế độ nhận diện khuôn mặt
+với thẻ
+ const canvas = document.createElement('canvas');
+ canvas.width = 640;
+ canvas.height = 480;
+ const context = canvas.getContext('2d');
+ const video = document.getElementById('webcam');
+ context.drawImage(video, 0, 0, canvas.width, canvas.height);
+ const dataUrl = canvas.toDataURL('image/png');
+ fetch('/recognize_with_card', {
+ method: 'POST',
+ body: JSON.stringify({ image: dataUrl }),
+ headers: { 'Content-Type': 'application/json' }
+ })
+ .then(response => {
+ if (!response.ok) {
+ return response.json().then(data => { throw new
+Error(data.message); });
+ }
+ return response.json();
+ })
+ .then(data => {
+ document.getElementById('result').innerHTML =
+data.message;
+ stopWebcam();
+ document.getElementById('webcam-container').style.display
+= 'none';
+ if (data.status === "success" && data.card_image_url) {
+ document.getElementById('verification').style.display
+= 'block';
+ document.getElementById('student-card-image').src =
+data.card_image_url;
+ const verificationMessage =
+document.getElementById('verification-message');
+ verificationMessage.innerHTML = "Vui lòng kiểm tra
+lại thẻ sinh viên bên dưới hệ thống chỉ định đúng là của bạn? (Bấm nút Có: để
+tiếp tục, Không: để quay lại trang chủ)";
+ document.getElementById('confirm-yes').onclick =
+function() {
+
+document.getElementById('verification').style.display = 'none';
+ document.getElementById('notificationmessage2').innerHTML = data.message + "<br>Xin chào! Bạn sắp được chuyển đến
+bài thi của mình.";
+ if (data.redirect_url) {
+ showNotification2(data.redirect_url); // Sử
+dụng notification2 sau khi xác nhận ảnh thẻ sinh viên
+ } else {
+ showError("Đường dẫn chuyển hướng không tồn
+tại.");
+ }
+ };
+ document.getElementById('confirm-no').onclick =
+function() {
+
+document.getElementById('verification').style.display = 'none';
+ document.getElementById('result').innerHTML = '';
+// Ẩn thông báo đã nhận diện
+ showError("Nhận diện không thành công. Vui lòng
+thử lại.");
+ };
+ } else {
+ showError(data.message);
+ }
+ })
+ .catch(error => {
+ showError(`Đã xảy ra lỗi: ${error.message}`);
+ console.error("Error:", error);
+ });
+ }
+ function showNotification1(redirectUrl) {
+ const notification =
+document.getElementById('notification1');
+ const notificationMessage =
+document.getElementById('notification-message1');
+ const manualButton1 = document.getElementById('manualbutton1');
+ const countdownMessage = document.getElementById('countdownmessage1');
+ notification.style.display = 'block';
+ notificationMessage.innerHTML += "<br>Bấm nút bên dưới hoặc
+hệ thống tự chuyển sau <span id='countdown1'>60</span> giây...";
+ let countdownValue = 60;
+ const countdownElement =
+document.getElementById('countdown1');
+ const countdownInterval = setInterval(() => {
+ countdownValue--;
+ countdownElement.innerText = countdownValue;
+ if (countdownValue <= 0) {
+ clearInterval(countdownInterval);
+ window.location.href = redirectUrl;
+ }
+ }, 1000);
+ manualButton1.addEventListener('click', () => {
+ clearInterval(countdownInterval);
+ window.location.href = redirectUrl;
+ });
+ }
+ function showNotification2(redirectUrl) {
+ const notification =
+document.getElementById('notification2');
+ const notificationMessage =
+document.getElementById('notification-message2');
+ const manualButton2 = document.getElementById('manualbutton2');
+ notification.style.display = 'block';
+ notificationMessage.innerHTML += "<br>Bấm nút bên dưới hoặc
+hệ thống tự chuyển sau <span id='countdown2'>60</span> giây...";
+ let countdownValue = 60;
+ const countdownElement =
+document.getElementById('countdown2');
+ let countdownInterval;
+ manualButton2.addEventListener('click', () => {
+ clearInterval(countdownInterval);
+ window.location.href = redirectUrl;
+ });
+ if (redirectUrl) {
+ notification.style.display = 'block';
+ countdownInterval = setInterval(() => {
+ countdownValue--;
+ countdownElement.innerText = countdownValue;
+ if (countdownValue <= 0) {
+ clearInterval(countdownInterval);
+ window.location.href = redirectUrl;
+ }
+ }, 1000);
+ } else {
+ showError("Đường dẫn chuyển hướng không tồn tại.");
+ }
+ }
+ function stopWebcam() {
+ const webcam = document.getElementById('webcam');
+ const stream = webcam.srcObject;
+ if (stream) {
+ const tracks = stream.getTracks();
+ tracks.forEach(track => track.stop());
+ }
+ webcam.srcObject = null;
+ }
+ function showError(message) {
+ const error = document.getElementById('error');
+ const errorMessage = document.getElementById('errormessage');
+ error.style.display = 'block';
+ errorMessage.innerHTML = message;
+ // Tự động ẩn thông báo lỗi sau 3 giây
+ setTimeout(() => { error.style.display = 'none'; }, 3000);
+ }
+ setCaptureBtnOnClick(); // Đảm bảo thiết lập sự kiện onclick ban
+đầu
+ });
+</script>
