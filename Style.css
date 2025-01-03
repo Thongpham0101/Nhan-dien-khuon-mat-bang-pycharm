@@ -1,0 +1,162 @@
+/* Đặt màu nền và font chữ cho toàn bộ trang */
+body {
+ background-color: #f5f5f5;
+ font-family: Arial, sans-serif;
+}
+/* Định kiểu cho logo */
+.logo {
+ max-width: 50px; /* Giảm kích thước logo */
+ height: auto;
+ margin-bottom: 0; /* Xóa khoảng cách dưới logo */
+}
+/* Định kiểu cho tiêu đề và phụ đề */
+.title, .subtitle {
+ color: #ffffff; /* Chuyển màu chữ thành trắng */
+ margin: 0; /* Xóa khoảng cách trên và dưới */
+}
+.title {
+ font-size: 1.5em; /* Giảm cỡ chữ tiêu đề */
+}
+.subtitle {
+ font-size: 0.9em; /* Cỡ chữ nhỏ hơn cho dòng chữ mới thêm vào */
+ margin-top: -5px; /* Giảm khoảng cách giữa tiêu đề và dòng chữ mới */
+}
+/* Định kiểu cho card */
+.card {
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+/* Định kiểu cho các nhãn */
+.label-instruction {
+ display: block;
+ margin-bottom: 10px;
+ font-size: 1rem; /* Giảm cỡ chữ label */
+ color: #343a40;
+ text-align: left; /* Căn lề trái cho dòng chữ */
+}
+h2 {
+ color: #343a40;
+ font-size: 1em; /* Tăng cỡ chữ h2 */
+}
+.card-title {
+ color: #007bff; /* Thay đổi màu chữ thành màu xanh */
+}
+.card-title {
+ font-weight: bold; /* Bôi đậm chữ */
+}
+.small-text {
+ font-size: 1.1em; /* Điều chỉnh cỡ chữ nhỏ */
+}
+/* Định kiểu cho button chính */
+.btn-primary {
+ background-color: #007bff;
+ border-color: #007bff;
+}
+#result {
+ font-size: 1.2rem;
+ color: #343a40;
+}
+/* Định kiểu cho footer */
+.footer {
+ position: fixed;
+ bottom: 0;
+ width: 100%;
+ text-align: center;
+ padding: 10px 0;
+ color: #00467f;
+ font-size: 1rem;
+}
+.alert {
+ position: relative;
+}
+.countdown {
+ font-size: 1.5em;
+ font-weight: bold;
+}
+/* Định kiểu cho header */
+.header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding: 5px 10px; /* Giảm padding của thanh đầu trang */
+ background-color: #00467f; /* Màu xanh côban cho thanh đầu trang */
+ border-bottom: 1px solid #ccc;
+ position: relative; /* Đảm bảo phần header không ảnh hưởng đến các thành
+phần khác */
+ z-index: 1000; /* Đảm bảo header hiển thị trên các thành phần khác */
+}
+/* Định kiểu cho button navbar */
+.navbar-toggler {
+ border: none;
+ background: none;
+}
+.navbar-toggler-icon {
+ display: none; /* Ẩn biểu tượng mặc định của Bootstrap */
+}
+.navbar-toggler i {
+ color: white; /* Chuyển màu biểu tượng Font Awesome thành trắng */
+ font-size: 1.5em; /* Điều chỉnh kích thước biểu tượng */
+}
+/* Định kiểu cho phần menu collapse */
+.collapse {
+ background-color: white; /* Màu nền của menu */
+ box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ để đẹp mắt
+hơn */
+ padding: 10px; /* Thêm padding cho menu */
+ border-radius: 15px; /* Thêm bo góc cho menu */
+ position: absolute; /* Đảm bảo menu hiện ngay dưới thanh đầu trang */
+ top: calc(100% + 5px); /* Đặt ngay bên dưới thanh đầu trang và có khoảng
+cách */
+ right: 0;
+ width: auto; /* Điều chỉnh chiều rộng của menu */
+ z-index: 1000; /* Đảm bảo menu hiển thị trên các thành phần khác */
+}
+/* Định kiểu cho navbar-nav */
+.navbar-nav {
+ flex-direction: column;
+ width: 100%;
+}
+.nav-item {
+ margin-bottom: 10px; /* Thêm khoảng cách giữa các mục menu */
+}
+/* Định kiểu cho nav-link */
+.nav-link {
+ color: #007bff; /* Màu chữ liên kết */
+ text-align: left; /* Căn lề trái cho chữ */
+ padding: 10px;
+ border-radius: 5px; /* Thêm bo tròn góc cho liên kết */
+ transition: background-color 0.3s; /* Thêm hiệu ứng chuyển màu nền */
+ display: flex; /* Để biểu tượng và chữ nằm trên cùng một hàng */
+ align-items: center; /* Căn giữa biểu tượng và chữ theo chiều dọc */
+}
+.nav-link i {
+ margin-right: 12px; /* Thêm khoảng cách giữa biểu tượng và chữ */
+}
+.nav-link:hover {
+ background-color: #e0f7fa; /* Thay đổi màu nền khi hover */
+}
+.notification {
+ position: fixed;
+ top: 20px;
+ right: 20px;
+ z-index: 1050;
+ display: none;
+}
+.notification p {
+ margin: 0;
+}
+.notification button {
+ margin-top: 10px;
+}
+.result-text {
+ display: none; /* Ẩn dòng chữ "Đã nhận diện:..." */
+}
+#error {
+ display: none; /* Ẩn mặc định thông báo lỗi */
+ background-color: #f8d7da;
+ color: #721c24;
+ padding: 10px;
+ margin-top: 10px;
+ border: 1px solid #f5c6cb;
+ border-radius: 4px;
+ position: relative;
+} 
