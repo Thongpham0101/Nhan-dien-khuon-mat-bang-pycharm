@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Lịch sử quét</title>
+ <link rel="icon" href="{{ url_for('static',
+filename='favicon_vinhuni.png') }}" type="image/x-icon">
+ <link
+href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.cs
+s" rel="stylesheet">
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-
+beta3/css/all.min.css" rel="stylesheet">
+ <link href="{{ url_for('static', filename='styles.css') }}"
+rel="stylesheet"> <!-- Liên kết tới tệp CSS -->
+ <style>
+ .hidden { display: none; }
+ table { width: 100%; border-collapse: collapse; }
+ th, td { border: 1px solid black; padding: 8px; text-align: left; }
+ th { background-color: #f2f2f2; }
+ </style>
+</head>
+<body>
+ <div class="header">
+ <div class="d-flex align-items-center justify-content-between w-100">
+ <div class="d-flex align-items-center">
+ <img src="{{ url_for('static', filename='logo_vinhuni.png')
+}}" alt="VinhUni Logo" class="logo">
+ <div class="ml-2">
+ <div class="title">TRƯỜNG ĐẠI HỌC VINH</div>
+ <div class="subtitle">Hệ thống nhận diện khuôn mặt trực
+tuyến</div>
+ </div>
+ </div>
+ <button class="navbar-toggler" type="button" datatoggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" ariaexpanded="false" aria-label="Toggle navigation">
+ <i class="fa-solid fa-bars" style="color: white;"></i>
+ </button>
+ </div>
+ <div class="collapse navbar-collapse" id="navbarNav">
+ <ul class="navbar-nav">
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('index') }}">
+ <i class="fa-solid fa-house"></i>
+ Trang chủ
+ </a>
+ </li>
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('add_face') }}">
+ <i class="fa-solid fa-user-plus"></i>
+ Thêm mới khuôn mặt vào CSDL
+ </a>
+ </li>
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('guide') }}">
+ <i class="fas fa-history"></i>
+ Lịch sử quét
+ </a>
+ </li>
+ <li class="nav-item">
+ <a class="nav-link" href="{{ url_for('info') }}">
+ <i class="fa-solid fa-info-circle"></i>
+ HDSD & Thông tin phần mềm
+ </a>
+ </li>
+ </ul>
+ </div>
+ </div>
+ <div class="footer">
+ ©Nhóm 7
+ </div>
+ <div class="container mt-5">
+ <div class="text-center mb-4">
+ <h1 class="text-center">Lịch sử quét & nhận diện</h1>
+ <h2 class="text-center small-text"></h2>
+ </div>
+ <div id="password-section" class="card mt-4">
+ <div class="card-body">
+ <h5 class="card-title">Nhập mật khẩu của quản trị viên để
+thực hiện chức năng này:</h5>
+ <input type="password" id="password-input" class="formcontrol" placeholder="Nhập mật khẩu QTV">
+ <button onclick="checkPassword()" class="btn btn-primary mt2">Xác nhận</button>
+ <div id="password-alert" class="alert alert-danger mt-2
+hidden" role="alert">
+ Mật khẩu không đúng. Vui lòng thử lại.
+ </div>
+ </div>
+ </div>
+ <div id="choice-section" class="card mt-4 hidden">
+ <div class="card-body">
+ <h5 class="card-title">Chọn lịch sử muốn xem</h5>
+ <button onclick="showCSV('lichsuquet')" class="btn btnsecondary">Lịch sử quét</button>
+ <button onclick="showCSV('thamdu')" class="btn btnsecondary">Lịch sử thêm</button>
+ </div>
+ </div>
+ <div id="table-section" class="card mt-4 hidden">
+ <div class="card-body">
+ <h5 class="card-title">Nội dung lịch sử</h5>
+ <button onclick="goBack()" class="btn btn-secondary mb3">Quay lại</button>
+ <div id="error-message" class="alert alert-danger hidden"
+role="alert"></div>
+ <table id="data-table">
+ <thead></thead>
+ <tbody></tbody>
+ </table>
+ </div>
+ </div>
+ </div>
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script
+src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js
+"></script>
+ <script
+src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js">
+</script>
+ <script>
+ const correctPassword = "N7@tnl"; // Đảm bảo mật khẩu chính xác
+ function checkPassword() {
+ const passwordInput = document.getElementById('passwordinput').value;
+ if (passwordInput === correctPassword) {
+ document.getElementById('passwordsection').classList.add('hidden');
+ document.getElementById('choicesection').classList.remove('hidden');
+ } else {
+ document.getElementById('passwordalert').classList.remove('hidden');
+ setTimeout(() => {
+ document.getElementById('passwordalert').classList.add('hidden');
+ }, 5000);
+ }
+ }
+ function showCSV(fileName) {
+ fetch(`/get_csv_data/${fileName}`)
+ .then(response => {
+ if (!response.ok) {
+ throw new Error(`Network response was not ok:
+${response.statusText}`);
+ }
+ return response.json();
+ })
+ .then(data => {
+ if (data.error) {
+ document.getElementById('error-message').textContent
+= data.error;
+ document.getElementById('errormessage').classList.remove('hidden');
+ return;
+ }
+ const headers = data.columns;
+ const rows = data.data;
+ // Làm trống bảng hiện tại
+ const tableHead = document.getElementById('data-
+table').querySelector('thead');
+ const tableBody = document.getElementById('datatable').querySelector('tbody');
+ tableHead.innerHTML = '';
+ tableBody.innerHTML = '';
+ // Tạo hàng tiêu đề
+ let headerRow = '<tr>';
+ headers.forEach(header => {
+ headerRow += `<th>${header}</th>`;
+ });
+ headerRow += '</tr>';
+ tableHead.innerHTML = headerRow;
+ // Tạo các hàng dữ liệu
+ rows.forEach(row => {
+ let rowHtml = '<tr>';
+ for (const cell of Object.values(row)) {
+ rowHtml += `<td>${cell}</td>`;
+ }
+ rowHtml += '</tr>';
+ tableBody.innerHTML += rowHtml;
+ });
+ document.getElementById('choicesection').classList.add('hidden');
+ document.getElementById('tablesection').classList.remove('hidden');
+ document.getElementById('errormessage').classList.add('hidden'); // Ẩn thông báo lỗi nếu có dữ liệu hợp lệ
+ })
+ .catch(error => {
+ document.getElementById('error-message').textContent =
+`Error fetching CSV data: ${error.message}`;
+ document.getElementById('errormessage').classList.remove('hidden');
+ console.error('Error fetching CSV data:', error);
+ });
+ }
+ function goBack() {
+ document.getElementById('table-section').classList.add('hidden');
+ document.getElementById('choicesection').classList.remove('hidden');
+ }
+ </script>
+</body>
+</html>
